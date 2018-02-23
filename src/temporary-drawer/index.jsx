@@ -75,12 +75,11 @@ class TemporaryDrawer extends React.Component {
     this.drawerFoundation.close();
   }
   persistentDrawerCreate() {
-    const { onClose, onOpen } = this.props;
     this.drawerFoundation = drawerFoundation({
       elementDrawer: this.elementDrawer,
       elementRoot: this.elementRoot,
-      onClose,
-      onOpen,
+      onClose: this.getOnClose(),
+      onOpen: this.getOnOpen(),
       propClassNames: this.getClassNamesFromProps().split(' '),
       updateClassNames: this.updateClassNames,
       updateCssVariables: this.updateCssVariables,
