@@ -4,4 +4,4 @@ services:
     build: "."
     container_name: "materialr-drawer"
     volumes:
-      - ./:/app
+      - ./:/home/node/app
