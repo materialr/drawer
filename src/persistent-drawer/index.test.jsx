@@ -1,12 +1,13 @@
+import * as persistentDrawer from '@material/drawer/persistent';
+import { strings } from '@material/drawer/persistent/constants';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 
 import PersistentDrawer from './index';
-import drawerFoundation from './foundation';
 
-const CHILDREN = 'CHILDREN';
+const CHILDREN = <p>CHILDREN</p>;
 
-test('<PersistentDrawer /> > Adds default classNames', () => {
+test('Renders the default classNames', () => {
   const wrapper = shallow(
     <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
     { disableLifecycleMethods: true },
@@ -18,7 +19,7 @@ test('<PersistentDrawer /> > Adds default classNames', () => {
   expect(actual).toBe(expected);
 });
 
-test('<PersistentDrawer /> > Adds extra classNames', () => {
+test('Renders additional classnames from the \'className\' prop', () => {
   const CLASS_NAME = 'CLASS_NAME';
   const wrapper = shallow(
     <PersistentDrawer className={CLASS_NAME}>{CHILDREN}</PersistentDrawer>,
@@ -31,242 +32,134 @@ test('<PersistentDrawer /> > Adds extra classNames', () => {
   expect(actual).toBe(expected);
 });
 
-test('<PersistentDrawer /> > Creates the foundation on mount', () => {
-  const persistentDrawerCreate = jest.fn();
-  const persistentDrawerOpen = jest.fn();
+test('Passes through all the necessary props', () => {
   const wrapper = shallow(
     <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
     { disableLifecycleMethods: true },
   );
-  const instance = wrapper.instance();
-  const expectedPersistentDrawerCreate = 1;
-  const expectedPersistentDrawerOpen = 0;
-  instance.persistentDrawerCreate = persistentDrawerCreate;
-  instance.persistentDrawerOpen = persistentDrawerOpen;
+  const expected = CHILDREN;
 
-  instance.componentDidMount();
-  const actualPersistentDrawerCreate = persistentDrawerCreate.mock.calls.length;
-  const actualPersistentDrawerOpen = persistentDrawerOpen.mock.calls.length;
-
-  expect(actualPersistentDrawerCreate).toBe(expectedPersistentDrawerCreate);
-  expect(actualPersistentDrawerOpen).toBe(expectedPersistentDrawerOpen);
-});
-
-test('<PersistentDrawer /> > Opens the drawer on mount if set to', () => {
-  const persistentDrawerOpen = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer isOpen>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expectedPersistentDrawerOpen = 1;
-  instance.persistentDrawerCreate = () => 'persistentDrawerCreate';
-  instance.persistentDrawerOpen = persistentDrawerOpen;
-
-  instance.componentDidMount();
-  const actualPersistentDrawerOpen = persistentDrawerOpen.mock.calls.length;
-
-  expect(actualPersistentDrawerOpen).toBe(expectedPersistentDrawerOpen);
-});
-
-test('<PersistentDrawer /> > Opens the drawer when the prop changes', () => {
-  const persistentDrawerOpen = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expectedPersistentDrawerOpen = 1;
-  instance.persistentDrawerOpen = persistentDrawerOpen;
-
-  instance.componentWillReceiveProps({ isOpen: true });
-  const actualPersistentDrawerOpen = persistentDrawerOpen.mock.calls.length;
-
-  expect(actualPersistentDrawerOpen).toBe(expectedPersistentDrawerOpen);
-});
-
-test('<PersistentDrawer /> > Closes the drawer when the prop changes', () => {
-  const persistentDrawerClose = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer isOpen>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expectedPersistentDrawerClose = 1;
-  instance.persistentDrawerClose = persistentDrawerClose;
-
-  instance.componentWillReceiveProps({ isOpen: false });
-  const actualPersistentDrawerClose = persistentDrawerClose.mock.calls.length;
-
-  expect(actualPersistentDrawerClose).toBe(expectedPersistentDrawerClose);
-});
-
-test('<PersistentDrawer /> > Destroys the drawer on unmount', () => {
-  const persistentDrawerDestroy = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expectedPersistentDrawerDestroy = 1;
-  instance.persistentDrawerDestroy = persistentDrawerDestroy;
-
-  instance.componentWillUnmount();
-  const actualPersistentDrawerDestroy = persistentDrawerDestroy.mock.calls.length;
-
-  expect(actualPersistentDrawerDestroy).toBe(expectedPersistentDrawerDestroy);
-});
-
-test('<PersistentDrawer /> > getOnClose() returns the onClose property', () => {
-  const ON_CLOSE = () => 'ON_CLOSE';
-  const wrapper = shallow(
-    <PersistentDrawer onClose={ON_CLOSE}>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const expected = ON_CLOSE;
-
-  const actual = wrapper.instance().getOnClose();
+  const actual = wrapper.find('nav').props().children;
 
   expect(actual).toBe(expected);
 });
 
-test('<PersistentDrawer /> > getOnClose() returns a default empty method', () => {
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const expected = () => {};
-
-  const actual = wrapper.instance().getOnClose();
-  actual();
-
-  expect(JSON.stringify(actual)).toBe(JSON.stringify(expected));
-});
-
-test('<PersistentDrawer /> > getOnOpen() returns the onOpen property', () => {
-  const ON_OPEN = () => 'ON_OPEN';
-  const wrapper = shallow(
-    <PersistentDrawer onOpen={ON_OPEN}>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const expected = ON_OPEN;
-
-  const actual = wrapper.instance().getOnOpen();
-
-  expect(actual).toBe(expected);
-});
-
-test('<PersistentDrawer /> > getOnOpen() returns a default empty method', () => {
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const expected = () => {};
-
-  const actual = wrapper.instance().getOnOpen();
-  actual();
-
-  expect(JSON.stringify(actual)).toBe(JSON.stringify(expected));
-});
-
-test('<PersistentDrawer /> > Closes the drawer', () => {
-  const close = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
+test('Creates the MDCPersistentDrawer component on mount', () => {
+  const OPEN = true;
+  const implementation = { open: undefined };
+  const MDCPersistentDrawer = jest.fn();
+  MDCPersistentDrawer.mockImplementation(() => implementation);
+  persistentDrawer.MDCPersistentDrawer = MDCPersistentDrawer;
+  const wrapper = mount(<PersistentDrawer open={OPEN}>{CHILDREN}</PersistentDrawer>);
   const instance = wrapper.instance();
-  const expected = 1;
-  instance.drawerFoundation = { close };
+  const expectedMDCPersistentDrawer = instance.elementRoot;
+  const expectedOpen = OPEN;
 
-  instance.persistentDrawerClose();
-  const actual = close.mock.calls.length;
+  const actualMDCPersistentDrawer = MDCPersistentDrawer.mock.calls[0][0];
+  const actualOpen = implementation.open;
 
-  expect(actual).toBe(expected);
+  expect(actualMDCPersistentDrawer).toBe(expectedMDCPersistentDrawer);
+  expect(actualOpen).toBe(expectedOpen);
 });
 
-test('<PersistentDrawer /> > Creates the foundation', () => {
+test('Destroys the MDCPersistentDrawer component on unmount', () => {
+  const destroy = jest.fn();
   const wrapper = mount(<PersistentDrawer>{CHILDREN}</PersistentDrawer>);
   const instance = wrapper.instance();
-  const { elementDrawer, elementRoot, getOnClose, getOnOpen } = instance;
-  const expected = drawerFoundation({
-    elementDrawer,
-    elementRoot,
-    onClose: getOnClose(),
-    onOpen: getOnOpen(),
-    propClassNames: instance.getClassNamesFromProps().split(' '),
-    updateClassNames: instance.updateClassNames,
-  });
-  expected.init();
-
-  const actual = instance.drawerFoundation;
-
-  expect(JSON.stringify(actual)).toEqual(JSON.stringify(expected));
-});
-
-test('<PersistentDrawer /> > Destroys the drawer', () => {
-  const destroy = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
   const expected = 1;
-  instance.drawerFoundation = { destroy };
+  instance.persistentDrawer.destroy = destroy;
 
-  instance.persistentDrawerDestroy();
+  wrapper.unmount();
   const actual = destroy.mock.calls.length;
 
   expect(actual).toBe(expected);
 });
 
-test('<PersistentDrawer /> > Opens the drawer', () => {
-  const open = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expected = 1;
-  instance.drawerFoundation = { open };
+test('Adds event listeners when the component mounts', () => {
+  const ON_CLOSE = () => 'ON_CLOSE';
+  const ON_OPEN = () => 'ON_OPEN';
+  const listen = jest.fn();
+  const MDCPersistentDrawer = jest.fn();
+  MDCPersistentDrawer.mockImplementation(() => ({ listen }));
+  persistentDrawer.MDCPersistentDrawer = MDCPersistentDrawer;
+  mount(<PersistentDrawer onClose={ON_CLOSE} onOpen={ON_OPEN}>{CHILDREN}</PersistentDrawer>);
+  const expectedOnCloseOne = strings.CLOSE_EVENT;
+  const expectedOnCloseTwo = ON_CLOSE;
+  const expectedOnOpenOne = strings.OPEN_EVENT;
+  const expectedOnOpenTwo = ON_OPEN;
 
-  instance.persistentDrawerOpen();
-  const actual = open.mock.calls.length;
+  const mockOnCloseCall = listen.mock.calls[0];
+  const actualOnCloseOne = mockOnCloseCall[0];
+  const actualOnCloseTwo = mockOnCloseCall[1];
+  const mockOnOpenCall = listen.mock.calls[1];
+  const actualOnOpenOne = mockOnOpenCall[0];
+  const actualOnOpenTwo = mockOnOpenCall[1];
+
+  expect(actualOnCloseOne).toBe(expectedOnCloseOne);
+  expect(actualOnCloseTwo).toBe(expectedOnCloseTwo);
+  expect(actualOnOpenOne).toBe(expectedOnOpenOne);
+  expect(actualOnOpenTwo).toBe(expectedOnOpenTwo);
+});
+
+test('Removes event listeners when the component mounts', () => {
+  const ON_CLOSE = () => 'ON_CLOSE';
+  const ON_OPEN = () => 'ON_OPEN';
+  const destroy = () => {};
+  const listen = () => {};
+  const unlisten = jest.fn();
+  const MDCPersistentDrawer = jest.fn();
+  MDCPersistentDrawer.mockImplementation(() => ({ destroy, listen, unlisten }));
+  persistentDrawer.MDCPersistentDrawer = MDCPersistentDrawer;
+  const wrapper = mount(
+    <PersistentDrawer onClose={ON_CLOSE} onOpen={ON_OPEN}>{CHILDREN}</PersistentDrawer>,
+  );
+  const expectedOnCloseOne = strings.CLOSE_EVENT;
+  const expectedOnCloseTwo = ON_CLOSE;
+  const expectedOnOpenOne = strings.OPEN_EVENT;
+  const expectedOnOpenTwo = ON_OPEN;
+
+  wrapper.unmount();
+  const mockOnCloseCall = unlisten.mock.calls[0];
+  const actualOnCloseOne = mockOnCloseCall[0];
+  const actualOnCloseTwo = mockOnCloseCall[1];
+  const mockOnOpenCall = unlisten.mock.calls[1];
+  const actualOnOpenOne = mockOnOpenCall[0];
+  const actualOnOpenTwo = mockOnOpenCall[1];
+
+  expect(actualOnCloseOne).toBe(expectedOnCloseOne);
+  expect(actualOnCloseTwo).toBe(expectedOnCloseTwo);
+  expect(actualOnOpenOne).toBe(expectedOnOpenOne);
+  expect(actualOnOpenTwo).toBe(expectedOnOpenTwo);
+});
+
+test('Opens/Closes the drawer when the \'open\' prop changes', () => {
+  const OPEN = true;
+  const listen = () => {};
+  const implementation = { listen, open: undefined };
+  const MDCPersistentDrawer = jest.fn();
+  MDCPersistentDrawer.mockImplementation(() => implementation);
+  persistentDrawer.MDCPersistentDrawer = MDCPersistentDrawer;
+  const wrapper = mount(<PersistentDrawer>{CHILDREN}</PersistentDrawer>);
+  const expected = OPEN;
+
+  wrapper.setProps({ open: OPEN });
+  const actual = implementation.open;
 
   expect(actual).toBe(expected);
 });
 
-test('<PersistentDrawer /> > Updates classNames when the component is mounted', () => {
-  const CLASS_NAMES = 'CLASS_NAMES';
-  const setState = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expected = { classNames: CLASS_NAMES };
-  instance.componentIsMounted = true;
-  instance.setState = setState;
+test('Does not open/close the drawer when the \'open\' prop doesn\'t change', () => {
+  const OPEN = true;
+  const listen = () => {};
+  const implementation = { listen, open: OPEN };
+  const MDCPersistentDrawer = jest.fn();
+  MDCPersistentDrawer.mockImplementation(() => implementation);
+  persistentDrawer.MDCPersistentDrawer = MDCPersistentDrawer;
+  const wrapper = mount(<PersistentDrawer open={OPEN}>{CHILDREN}</PersistentDrawer>);
+  const expected = OPEN;
 
-  instance.updateClassNames(CLASS_NAMES);
-  const actual = setState.mock.calls[0][0];
-
-  expect(actual).toEqual(expected);
-});
-
-test('<PersistentDrawer /> > Does not update classNames when the component is not mounted', () => {
-  const setState = jest.fn();
-  const wrapper = shallow(
-    <PersistentDrawer>{CHILDREN}</PersistentDrawer>,
-    { disableLifecycleMethods: true },
-  );
-  const instance = wrapper.instance();
-  const expected = 0;
-  instance.componentIsMounted = false;
-  instance.setState = setState;
-
-  instance.updateClassNames();
-  const actual = setState.mock.calls.length;
+  wrapper.setProps({ open: OPEN });
+  const actual = implementation.open;
 
   expect(actual).toBe(expected);
 });
