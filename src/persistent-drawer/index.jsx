@@ -1,57 +1,46 @@
+import { MDCPersistentDrawer } from '@material/drawer/persistent';
+import { strings } from '@material/drawer/persistent/constants';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import '@material/drawer/mdc-drawer.scss';
 import '@material/drawer/persistent/mdc-persistent-drawer.scss';
-
-import drawerFoundation from './foundation';
 
 class PersistentDrawer extends React.Component {
   constructor(props) {
     super(props);
-    this.componentIsMounted = undefined;
     this.elementRoot = undefined;
-    this.elementDrawer = undefined;
-    this.state = {
-      classNames: [],
-    };
-    this.drawerFoundation = undefined;
+    this.persistentDrawer = undefined;
     this.getClassNames = this.getClassNames.bind(this);
-    this.getClassNamesAsString = this.getClassNamesAsString.bind(this);
-    this.getClassNamesFromProps = this.getClassNamesFromProps.bind(this);
-    this.getOnClose = this.getOnClose.bind(this);
-    this.getOnOpen = this.getOnOpen.bind(this);
-    this.persistentDrawerClose = this.persistentDrawerClose.bind(this);
-    this.persistentDrawerCreate = this.persistentDrawerCreate.bind(this);
-    this.persistentDrawerDestroy = this.persistentDrawerDestroy.bind(this);
-    this.persistentDrawerOpen = this.persistentDrawerOpen.bind(this);
-    this.updateClassNames = this.updateClassNames.bind(this);
+    this.setOpen = this.setOpen.bind(this);
   }
   componentDidMount() {
-    this.componentIsMounted = true;
-    this.persistentDrawerCreate();
-    if (this.props.isOpen) {
-      this.persistentDrawerOpen();
+    const { elementRoot, props: { onClose, onOpen } } = this;
+    this.persistentDrawer = new MDCPersistentDrawer(elementRoot);
+    if (onClose) {
+      this.persistentDrawer.listen(strings.CLOSE_EVENT, onClose);
     }
+    if (onOpen) {
+      this.persistentDrawer.listen(strings.OPEN_EVENT, onOpen);
+    }
+    this.setOpen();
   }
-  componentWillReceiveProps({ isOpen: nextIsOpen }) {
-    const { isOpen } = this.props;
-    if (isOpen && !nextIsOpen) {
-      this.persistentDrawerClose();
-    }
-    if (!isOpen && nextIsOpen) {
-      this.persistentDrawerOpen();
+  componentDidUpdate({ open: previousOpen }) {
+    if (previousOpen !== this.props.open) {
+      this.setOpen();
     }
   }
   componentWillUnmount() {
-    this.componentIsMounted = false;
-    this.persistentDrawerDestroy();
+    const { onClose, onOpen } = this.props;
+    if (onClose) {
+      this.persistentDrawer.unlisten(strings.CLOSE_EVENT, onClose);
+    }
+    if (onOpen) {
+      this.persistentDrawer.unlisten(strings.OPEN_EVENT, onOpen);
+    }
+    this.persistentDrawer.destroy();
   }
-  getClassNamesAsString() {
-    return `${this.getClassNamesFromProps()} ${this.getClassNames()}`.trim();
-  }
-  getClassNamesFromProps() {
+  getClassNames() {
     const { className } = this.props;
     return classnames({
       'mdc-drawer': true,
@@ -60,52 +49,18 @@ class PersistentDrawer extends React.Component {
       [className]: !!className,
     });
   }
-  getClassNames() {
-    return this.state.classNames.join(' ');
-  }
-  getOnClose() {
-    return this.props.onClose || (() => {});
-  }
-  getOnOpen() {
-    return this.props.onOpen || (() => {});
-  }
-  persistentDrawerClose() {
-    this.drawerFoundation.close();
-  }
-  persistentDrawerCreate() {
-    this.drawerFoundation = drawerFoundation({
-      elementDrawer: this.elementDrawer,
-      elementRoot: this.elementRoot,
-      onClose: this.getOnClose(),
-      onOpen: this.getOnOpen(),
-      propClassNames: this.getClassNamesFromProps().split(' '),
-      updateClassNames: this.updateClassNames,
-    });
-    this.drawerFoundation.init();
-  }
-  persistentDrawerDestroy() {
-    this.drawerFoundation.destroy();
-    this.drawerFoundation = undefined;
-  }
-  persistentDrawerOpen() {
-    this.drawerFoundation.open();
-  }
-  updateClassNames(classNames) {
-    if (this.componentIsMounted) {
-      this.setState({ classNames });
-    }
+  setOpen() {
+    this.persistentDrawer.open = this.props.open;
   }
   render() {
+    const { getClassNames, props: { children } } = this;
     return (
       <aside
-        className={this.getClassNamesAsString()}
+        className={getClassNames()}
         ref={(elementRoot) => { this.elementRoot = elementRoot; }}
       >
-        <nav
-          className="mdc-drawer__drawer"
-          ref={(elementDrawer) => { this.elementDrawer = elementDrawer; }}
-        >
-          {this.props.children}
+        <nav className="mdc-drawer__drawer">
+          {children}
         </nav>
       </aside>
     );
@@ -115,16 +70,16 @@ class PersistentDrawer extends React.Component {
 PersistentDrawer.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   onOpen: PropTypes.func,
+  open: PropTypes.bool,
 };
 
 PersistentDrawer.defaultProps = {
-  className: '',
-  isOpen: false,
+  className: undefined,
   onClose: undefined,
   onOpen: undefined,
+  open: false,
 };
 
 export default PersistentDrawer;
