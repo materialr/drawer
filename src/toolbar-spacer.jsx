@@ -7,8 +7,8 @@ const getClassNames = className => classnames({
   [className]: !!className,
 });
 
-const ToolbarSpacer = ({ children, className }) =>
-  <div className={getClassNames(className)}>{children}</div>;
+const ToolbarSpacer = ({ children, className, ...props }) =>
+  <div className={getClassNames(className)} {...props}>{children}</div>;
 
 ToolbarSpacer.propTypes = {
   children: PropTypes.node,

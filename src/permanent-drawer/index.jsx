@@ -12,8 +12,8 @@ const getClassNames = className => classnames({
   [className]: !!className,
 });
 
-const PermanentDrawer = ({ children, className }) => (
-  <nav className={getClassNames(className)}>
+const PermanentDrawer = ({ children, className, ...props }) => (
+  <nav className={getClassNames(className)} {...props}>
     <div className="mdc-drawer__content">
       {children}
     </div>
