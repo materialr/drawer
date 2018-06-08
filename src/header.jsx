@@ -7,8 +7,8 @@ const getClassNames = className => classnames({
   [className]: !!className,
 });
 
-const Header = ({ children, className }) => (
-  <header className={getClassNames(className)}>
+const Header = ({ children, className, ...props }) => (
+  <header className={getClassNames(className)} {...props}>
     <div className="mdc-drawer__header-content">
       {children}
     </div>

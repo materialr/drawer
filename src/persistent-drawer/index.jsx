@@ -53,11 +53,22 @@ class PersistentDrawer extends React.Component {
     this.persistentDrawer.open = this.props.open;
   }
   render() {
-    const { getClassNames, props: { children } } = this;
+    const {
+      getClassNames,
+      props: {
+        children,
+        className,
+        onClose,
+        onOpen,
+        open,
+        ...props
+      },
+    } = this;
     return (
       <aside
         className={getClassNames()}
         ref={(elementRoot) => { this.elementRoot = elementRoot; }}
+        {...props}
       >
         <nav className="mdc-drawer__drawer">
           {children}

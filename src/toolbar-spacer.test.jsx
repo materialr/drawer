@@ -37,3 +37,13 @@ test('Passes through all necessary props', () => {
 
   expect(actual).toBe(expected);
 });
+
+test('Passes through additional props', () => {
+  const DATA_QA = 'DATA_QA';
+  const wrapper = shallow(<ToolbarSpacer data-qa={DATA_QA} />, { disableLifecycleMethods: true });
+  const expected = DATA_QA;
+
+  const actual = wrapper.props()['data-qa'];
+
+  expect(actual).toBe(expected);
+});
